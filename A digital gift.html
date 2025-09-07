@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Birthday Adventure for Natalia ❤️</title>
+  <style>
+    body { font-family: sans-serif; background: #fff0f5; margin:0; padding:0; text-align:center; }
+    .screen { display:none; padding:20px; }
+    .screen.active { display:block; }
+
+    h1,h2,p { color:#880e4f; }
+
+    button { padding:12px 24px; border:none; border-radius:10px; cursor:pointer; background:#e91e63; color:white; font-weight:bold; font-size:16px; margin-top:20px; }
+
+    /* Intro text fade animation */
+    #introText { font-size:28px; font-weight:bold; color:#880e4f; opacity:0; transition:opacity 2s; }
+
+    /* Puzzle grid */
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; justify-content:center; max-width:400px; margin:20px auto; }
+    .card3d { perspective:1000px; cursor:pointer; }
+    .card-inner { position:relative; width:100%; padding-top:100%; transform-style:preserve-3d; transition: transform .5s; }
+    .card3d.flipped .card-inner { transform: rotateY(180deg); }
+    .face { position:absolute; inset:0; backface-visibility:hidden; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid #ccc; }
+    .front { background:#f9fafb; font-size:24px; font-weight:bold; color:#888; }
+    .back { transform: rotateY(180deg); background:white; }
+    .back img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* Gallery */
+    .gallery { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:20px; }
+    .gallery img { width:80px; height:80px; object-fit:cover; border-radius:8px; }
+
+    /* Scramble puzzle */
+    .scramble-words { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:20px; }
+    .scramble-words span { padding:6px 12px; border:1px solid #ccc; border-radius:8px; background:#fce4ec; cursor:grab; user-select:none; }
+    .scramble-target { margin-top:20px; min-height:50px; border:2px dashed #e91e63; padding:10px; border-radius:8px; }
+
+    /* Final message */
+    #finalMessage { font-size:32px; font-weight:bold; color:#ad1457; opacity:0; transition:opacity 4s; margin-top:100px; }
+  </style>
+</head>
+<body>
+  <!-- Background music -->
+  <audio id="bgMusic" autoplay loop>
+    <source src="https://dl.dropboxusercontent.com/s/cq3bsqzwmxl7ey8ieri04/1.-Beginnings-Are-Such-Delicate-Times-Trimmed-by-Rev.com.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+  </audio>
+
+  <!-- Intro screen -->
+  <section class="screen active" id="intro">
+    <div id="introText"></div>
+    <button id="startBtn" style="display:none;">Start</button>
+  </section>
+
+  <!-- Puzzle 1: Flower matching -->
+  <section class="screen" id="puzzle">
+    <h2>Find the matching flowers 🌸</h2>
+    <p>Flip the cards and match the pairs.</p>
+    <div class="grid" id="memoryGrid"></div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="screen" id="gallery">
+    <h2>She is more beautiful than the most beautiful flowers in the world 🌸</h2>
+    <div class="gallery" id="flowerGallery"></div>
+  </section>
+
+  <!-- Puzzle 2: Scramble -->
+  <section class="screen" id="scramble">
+    <h2>Arrange the words into a sentence 🌸</h2>
+    <div class="scramble-words" id="scrambleWords"></div>
+    <div class="scramble-target" id="scrambleTarget">Drop words here in order</div>
+    <button id="checkSentence">Check</button>
+  </section>
+
+  <!-- Video message -->
+  <section class="screen" id="videoPage">
+    <button id="playVideoBtn">The Message</button>
+    <video id="videoPlayer" width="640" controls style="display:none;">
+      <source src="video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </section>
+
+  <!-- Final message -->
+  <section class="screen" id="finalPage">
+    <div id="finalMessage">Happy birthday Natalia - 08.09.2025</div>
+  </section>
+
+  <script>
+    const screens=["intro","puzzle","gallery","scramble","videoPage","finalPage"];
+    function go(idx){
+      screens.forEach((id,i)=>document.getElementById(id).classList.toggle("active", i===idx));
+    }
+
+    /* Intro text sequence */
+    const introSentences=["Hello Natalia","This is","A small digital gift","For you","With love"];
+    let introIndex=0;
+    const introText=document.getElementById("introText");
+    function showNextIntro(){
+      if(introIndex<introSentences.length){
+        introText.innerText=introSentences[introIndex];
+        introText.style.opacity=1;
+        setTimeout(()=>{introText.style.opacity=0;},2000);
+        setTimeout(()=>{introIndex++;showNextIntro();},4000);
+      } else {
+        document.getElementById("startBtn").style.display="inline-block";
+      }
+    }
+    window.onload=()=>{ showNextIntro(); };
+
+    document.getElementById("startBtn").addEventListener("click",()=>go(1));
+
+    /* Puzzle 1: memory game */
+    const flowerImages=[
+      "Frangipani-1.jpg",
+      "Frangipani-2.jpg",
+      "Peony-1.jpg",
+      "Peony-2.jpg",
+      "Pink-rose.jpg",
+      "White-1.jpg"
+    ];
+    const grid=document.getElementById("memoryGrid");
+    let first=null, lock=false, matched=0;
+
+    function buildDeck(){
+      const deck=[...flowerImages,...flowerImages].map((src,i)=>({id:i,src,key:src}));
+      for(let i=deck.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [deck[i],deck[j]]=[deck[j],deck[i]];
+      }
+      grid.innerHTML=deck.map(c=>`
+        <div class="card3d" data-key="${c.key}">
+          <div class="card-inner">
+            <div class="face front">🌸</div>
+            <div class="face back"><img src="${c.src}" alt="flower"/></div>
+          </div>
+        </div>`).join("");
+      first=null; lock=false; matched=0;
+    }
+    buildDeck();
+
+    grid.addEventListener("click",e=>{
+      const card=e.target.closest(".card3d");
+      if(!card||lock||card.classList.contains("flipped")) return;
+      card.classList.add("flipped");
+      if(!first){ first=card; return; }
+      lock=true;
+      const match=first.dataset.key===card.dataset.key;
+      setTimeout(()=>{
+        if(!match){
+          first.classList.remove("flipped");
+          card.classList.remove("flipped");
+        } else {
+          matched++;
+          if(matched===flowerImages.length){ showGallery(); }
+        }
+        first=null; lock=false;
+      },600);
+    });
+
+    function showGallery(){
+      go(2);
+      const gal=document.getElementById("flowerGallery");
+      gal.innerHTML="";
+      for(let i=0;i<80;i++){
+        const img=document.createElement("img");
+        img.src=flowerImages[i%flowerImages.length];
+        gal.appendChild(img);
+      }
+      setTimeout(()=>go(3),4000); // move to scramble after short pause
+    }
+
+    /* Puzzle 2: Scramble */
+    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world. May the world open light, love, and harmony to you each year on this beautiful day";
+    const words=sentence.split(" ");
+    const scrambled=[...words].sort(()=>Math.random()-0.5);
+
+    const scrambleWords=document.getElementById("scrambleWords");
+    scrambled.forEach(w=>{
+      const span=document.createElement("span");
+      span.textContent=w;
+      span.draggable=true;
+      scrambleWords.appendChild(span);
+    });
+
+    const target=document.getElementById("scrambleTarget");
+    let order=[];
+    scrambleWords.addEventListener("dragstart",e=>{
+      e.dataTransfer.setData("text/plain",e.target.textContent);
+    });
+    target.addEventListener("dragover",e=>e.preventDefault());
+    target.addEventListener("drop",e=>{
+      e.preventDefault();
+      const word=e.dataTransfer.getData("text/plain");
+      order.push(word);
+      target.textContent=order.join(" ");
+    });
+
+    document.getElementById("checkSentence").addEventListener("click",()=>{
+      if(order.join(" ")===sentence){
+        go(4);
+      } else {
+        alert("Not quite right, try again 🌸");
+        order=[];
+        target.textContent="Drop words here in order";
+      }
+    });
+
+    /* Video + background music fade */
+    const bgMusic=document.getElementById("bgMusic");
+    const video=document.getElementById("videoPlayer");
+    const playBtn=document.getElementById("playVideoBtn");
+
+    function fadeVolume(targetVol){
+      const step=0.05;
+      const interval=setInterval(()=>{
+        if(Math.abs(bgMusic.volume-targetVol)<step){
+          bgMusic.volume=targetVol;
+          clearInterval(interval);
+        } else {
+          bgMusic.volume += (bgMusic.volume<targetVol?step:-step);
+        }
+      },200);
+    }
+
+    playBtn.addEventListener("click",()=>{
+      playBtn.style.display="none";
+      video.style.display="block";
+      fadeVolume(0.1);
+      video.play();
+    });
+
+    video.addEventListener("ended",()=>{
+      fadeVolume(1.0);
+      go(5);
+      setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},1000);
+    });
+  </script>
+</body>
+</html>
