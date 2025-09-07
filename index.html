@@ -1,306 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Natalia's Birthday surprise</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Birthday Surprise for Natalia ❤️</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #ffe6f2;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      overflow: hidden;
-    }
-    .page {
-      display: none;
-      height: 100vh;
-      width: 100vw;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    .active {
-      display: flex;
-    }
+    body { font-family: sans-serif; background: #fff7fb; margin:0; padding:0; overflow-x:hidden; }
+    .screen { display: none; text-align: center; padding:20px; }
+    .screen.active { display: block; }
+
     button {
-      padding: 12px 24px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      background: #ff80bf;
-      color: white;
-      cursor: pointer;
-      margin-top: 20px;
+      padding: 10px 20px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:#e91e63;
+      color:white;
+      font-weight:bold;
+      margin-top:20px;
     }
-    button:hover {
-      background: #ff4da6;
-    }
-    .fade-text {
-      font-size: 28px;
-      color: #cc0066;
-      opacity: 0;
-      transition: opacity 2s;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .flowers-container img {
-      position: absolute;
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-    }
-    .top-message {
-      font-size: 26px;
-      color: #cc0066;
+
+    /* Intro fade text */
+    #introText {
+      font-size: 2rem;
       font-weight: bold;
-      margin-bottom: 20px;
-      z-index: 2;
-    }
-    .petal {
+      color:#e91e63;
       position: absolute;
-      top: -50px;
-      width: 25px;
-      height: 25px;
-      background-image: url('https://i.postimg.cc/yYXpGLpw/White-1.jpg');
-      background-size: cover;
+      top:50%; left:50%;
+      transform: translate(-50%,-50%);
+      opacity:0;
+      transition: opacity 2s;
+      pointer-events: none;
+    }
+
+    /* Memory puzzle */
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+      gap:10px;
+      justify-content:center;
+      max-width:500px;
+      margin:20px auto;
+    }
+    .card3d { perspective:1000px; cursor:pointer; }
+    .card-inner { position:relative; width:100%; aspect-ratio:1/1; transform-style:preserve-3d; transition: transform .5s; }
+    .card3d.flipped .card-inner { transform: rotateY(180deg); }
+    .face { position:absolute; inset:0; backface-visibility:hidden; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid #ccc; }
+    .front { background:#f9fafb; font-size:24px; font-weight:bold; color:#888; }
+    .back { transform: rotateY(180deg); background:white; }
+    .back img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* Gallery scatter */
+    .gallery-text {
+      font-size:1.5rem;
+      font-weight:bold;
+      margin-bottom:20px;
+      position:relative;
+      z-index:10;
+      background:rgba(255,247,251,0.7);
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:12px;
+    }
+    .gallery { position:relative; width:100%; height:80vh; overflow:hidden; margin-top:20px; }
+    .gallery img { position:absolute; object-fit:cover; border-radius:8px; opacity:0.9; }
+
+    /* Scramble puzzle */
+    #scrambleWords { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:20px auto; max-width:600px; }
+    .word { padding:6px 10px; background:#fce4ec; border-radius:6px; cursor:pointer; user-select:none; }
+    #sentenceResult { margin-top:20px; font-size:1.2rem; font-weight:bold; color:#e91e63; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:90%; margin-left:auto; margin-right:auto; }
+
+    /* Final message */
+    #finalMessage { font-size:2rem; font-weight:bold; color:#e91e63; margin-top:40px; opacity:0; transition: opacity 3s; }
+
+    /* NEW: Center video */
+    #videoPage {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    #video {
+      max-width: 90%;
+      height: auto;
+      margin-top:20px;
+    }
+
+    /* NEW: Petal animation */
+    .petal {
+      position: fixed;
+      top: -5vh;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
       opacity: 0.8;
-      animation: fall linear infinite;
+      pointer-events: none;
+      animation-name: fall;
+      animation-timing-function: linear;
     }
     @keyframes fall {
-      from { transform: translateY(0) rotate(0deg); }
-      to { transform: translateY(100vh) rotate(360deg); }
-    }
-    .video-frame {
-      width: 640px;
-      height: 360px;
-    }
-    .final-message {
-      font-size: 32px;
-      color: #cc0066;
-      font-weight: bold;
-      opacity: 0;
-      animation: fadeIn 3s forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(110vh) rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Start Page -->
-  <div id="startPage" class="page active">
-    <button onclick="goToIntro()">Start</button>
-  </div>
+  <!-- Landing page -->
+  <section class="screen active" id="landing">
+    <button id="landingStart">Start</button>
+  </section>
 
-  <!-- Intro Page -->
-  <div id="introPage" class="page">
-    <div id="introText" class="fade-text"></div>
-    <button id="startPuzzleBtn" style="display:none;" onclick="startPuzzle()">Start Puzzle</button>
-  </div>
+  <!-- Intro fade words -->
+  <section class="screen" id="intro">
+    <div id="introText"></div>
+    <button id="introBtn" style="display:none;">Start Puzzle</button>
+  </section>
 
-  <!-- Puzzle Page -->
-  <div id="puzzlePage" class="page">
-    <div id="memoryGame"></div>
-  </div>
+  <!-- Memory puzzle -->
+  <section class="screen" id="puzzle">
+    <h2>Find the matching flowers</h2>
+    <p>Flip the cards and match the pairs.</p>
+    <div class="grid" id="memoryGrid"></div>
+  </section>
 
-  <!-- Flowers Gallery Page -->
-  <div id="flowersPage" class="page">
-    <div class="top-message">You are the rarest flower in the garden of Earth</div>
-    <div class="flowers-container" id="flowersContainer"></div>
-    <button onclick="goToScramble()">Next Puzzle</button>
-  </div>
+  <!-- Gallery -->
+  <section class="screen" id="gallery">
+    <div class="gallery-text">You are the rarest flower in the garden of Earth 🌸</div>
+    <div class="gallery" id="flowerGallery"></div>
+  </section>
 
-  <!-- Scramble Puzzle Page -->
-  <div id="scramblePage" class="page">
-    <h2>Arrange the words</h2>
+  <!-- Scramble puzzle -->
+  <section class="screen" id="scramble">
+    <h2>Arrange the words in the correct order</h2>
     <div id="scrambleWords"></div>
-    <div id="scrambleAnswer"></div>
-    <button id="toMessageBtn" style="display:none;" onclick="goToVideo()">The Message</button>
-  </div>
+    <div id="sentenceResult"></div>
+  </section>
 
-  <!-- Video Page -->
-  <div id="videoPage" class="page">
-    <video id="birthdayVideo" class="video-frame" controls>
+  <!-- Video -->
+  <section class="screen" id="videoPage">
+    <h2>The message</h2>
+    <button id="playVideoBtn">Play Video</button>
+    <video id="video" width="640" height="360" controls style="display:none;">
       <source src="Video.mp4" type="video/mp4">
-      Your browser does not support the video tag.
     </video>
-  </div>
+  </section>
 
-  <!-- Final Message Page -->
-  <div id="finalPage" class="page">
-    <div class="final-message">Always Beloved - Happy Birthday Natalia - 08.09.2025</div>
-  </div>
+  <!-- Final message -->
+  <section class="screen" id="final">
+    <div id="finalMessage">Always Beloved - Happy birthday Natalia - 08.09.2025</div>
+  </section>
 
-  <!-- Background Music -->
-  <audio id="bgMusic" loop>
-    <source src="Audio.mp3" type="audio/mpeg">
-  </audio>
+  <!-- Background music -->
+  <audio id="bgMusic" src="Audio.mp3" loop></audio>
 
-<script>
-let currentPage = "startPage";
+  <script>
+    const screens = ["landing","intro","puzzle","gallery","scramble","videoPage","final"];
+    function go(id){
+      screens.forEach(s=>document.getElementById(s).classList.remove("active"));
+      document.getElementById(id).classList.add("active");
 
-function showPage(pageId) {
-  document.getElementById(currentPage).classList.remove("active");
-  document.getElementById(pageId).classList.add("active");
-  currentPage = pageId;
-}
-
-function goToIntro() {
-  showPage("introPage");
-  playIntro();
-  document.getElementById("bgMusic").play();
-}
-
-function playIntro() {
-  const texts = ["Hello Natalia", "this is", "a small digital gift", "for you", "with love"];
-  let i = 0;
-  const introText = document.getElementById("introText");
-  function showNext() {
-    if (i < texts.length) {
-      introText.textContent = texts[i];
-      introText.style.opacity = 1;
-      setTimeout(() => {
-        introText.style.opacity = 0;
-        i++;
-        setTimeout(showNext, 2000);
-      }, 2000);
-    } else {
-      document.getElementById("startPuzzleBtn").style.display = "block";
+      // NEW: Start petals only when entering final screen
+      if(id === "final") startPetals();
     }
-  }
-  showNext();
-}
 
-function startPuzzle() {
-  showPage("puzzlePage");
-  initMemoryGame();
-}
+    // Landing start -> intro
+    document.getElementById("landingStart").addEventListener("click", ()=>{
+      go("intro");
+      const music=document.getElementById("bgMusic");
+      music.volume=1.0;
+      music.play().catch(()=>{});
+      startIntro();
+    });
 
-function initMemoryGame() {
-  const images = [
-    "Frangipani1.jpg",
-    "Frangipani2.jpg",
-    "/Peony1.jpg",
-    "Peony2.jpg",
-    "Pinkrose.jpg",
-    "White1.jpg"
-  ];
-  let cards = images.concat(images);
-  cards.sort(() => 0.5 - Math.random());
-  const game = document.getElementById("memoryGame");
-  game.innerHTML = "";
-  cards.forEach(img => {
-    const card = document.createElement("img");
-    card.src = img;
-    card.style.width = "120px";
-    card.style.height = "120px";
-    card.style.margin = "5px";
-    card.onclick = () => cardClicked(card, img);
-    game.appendChild(card);
-  });
-}
-
-let selected = [];
-function cardClicked(card, img) {
-  selected.push({card, img});
-  if (selected.length === 2) {
-    if (selected[0].img === selected[1].img) {
-      selected = [];
-      if (document.querySelectorAll("#memoryGame img[style*='visibility: hidden']").length === 10) {
-        goToFlowers();
+    // Intro fading words
+    const introSentences=["Hello Natalia","this is","a small digital gift","for you","with love"];
+    let introIndex=0;
+    function startIntro(){
+      const text=document.getElementById("introText");
+      function showNext(){
+        if(introIndex>=introSentences.length){
+          document.getElementById("introBtn").style.display="inline-block";
+          return;
+        }
+        text.textContent=introSentences[introIndex];
+        text.style.opacity=1;
+        setTimeout(()=>{ text.style.opacity=0; },2000);
+        introIndex++;
+        setTimeout(showNext,4000);
       }
-    } else {
-      setTimeout(() => {
-        selected.forEach(s => s.card.style.visibility = "hidden");
-        selected = [];
-      }, 800);
+      showNext();
     }
-  }
-}
+    document.getElementById("introBtn").addEventListener("click",()=>go("puzzle"));
 
-function goToFlowers() {
-  showPage("flowersPage");
-  const container = document.getElementById("flowersContainer");
-  container.innerHTML = "";
-  const images = [
-    "Frangipani1.jpg",
-    "Frangipani2.jpg",
-    "Peony1.jpg",
-    "Peony2.jpg",
-    "Pinkrose.jpg",
-    "White1.jpg"
-  ];
-  for (let i = 0; i < 40; i++) {
-    const img = document.createElement("img");
-    img.src = images[Math.floor(Math.random() * images.length)];
-    img.style.top = Math.random() * 80 + "%";
-    img.style.left = Math.random() * 90 + "%";
-    container.appendChild(img);
-  }
-}
+    // Memory puzzle
+    const flowerImages=[
+      "Frangipani1.jpg","Frangipani2.jpg",
+      "Peony1.jpg","Peony2.jpg",
+      "Pinkrose.jpg","White1.jpg"
+    ];
+    const grid=document.getElementById("memoryGrid");
+    let first=null, lock=false, matched=0;
+    function buildDeck(){
+      const deck=[...flowerImages,...flowerImages].map((src,i)=>({id:i,src,key:src}));
+      for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+      grid.innerHTML=deck.map(c=>`
+        <div class="card3d" data-key="${c.key}">
+          <div class="card-inner">
+            <div class="face front">🌸</div>
+            <div class="face back"><img src="${c.src}" alt="flower"/></div>
+          </div>
+        </div>`).join("");
+      first=null; lock=false; matched=0;
+    }
+    buildDeck();
 
-function goToScramble() {
-  showPage("scramblePage");
-  initScramble();
-}
+    grid.addEventListener("click",e=>{
+      const card=e.target.closest(".card3d");
+      if(!card||lock||card.classList.contains("flipped")) return;
+      card.classList.add("flipped");
+      if(!first){ first=card; return; }
+      lock=true;
+      const match=first.dataset.key===card.dataset.key;
+      setTimeout(()=>{
+        if(!match){ first.classList.remove("flipped"); card.classList.remove("flipped"); }
+        else { matched++; if(matched===flowerImages.length){ showGallery(); } }
+        first=null; lock=false;
+      },600);
+    });
 
-function initScramble() {
-  const sentence = "The world became bright and colorful on this day when you opened your diamond eyes to the world".split(" ");
-  const scrambled = [...sentence].sort(() => 0.5 - Math.random());
-  const scrambleWords = document.getElementById("scrambleWords");
-  const scrambleAnswer = document.getElementById("scrambleAnswer");
-  scrambleWords.innerHTML = "";
-  scrambleAnswer.innerHTML = "";
+    function showGallery(){
+      go("gallery");
+      const gal=document.getElementById("flowerGallery");
+      gal.innerHTML="";
+      const count=100;
+      for(let i=0;i<count;i++){
+        const img=document.createElement("img");
+        img.src=flowerImages[i%flowerImages.length];
+        const size=50+Math.random()*120;
+        img.style.width=size+"px";
+        img.style.height=size+"px";
+        img.style.top=Math.random()*70+"%";
+        img.style.left=Math.random()*90+"%";
+        img.style.transform=`rotate(${Math.random()*360}deg)`;
+        gal.appendChild(img);
+      }
+      setTimeout(()=>go("scramble"),5000); // auto move to next puzzle
+    }
 
-  scrambled.forEach(word => {
-    const btn = document.createElement("button");
-    btn.textContent = word;
-    btn.onclick = () => {
-      scrambleAnswer.appendChild(btn);
-      btn.onclick = () => {
-        scrambleWords.appendChild(btn);
-        btn.onclick = () => scrambleAnswer.appendChild(btn);
+    // Scramble puzzle
+    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world";
+    const words=sentence.split(" ");
+    const scrambled=[...words].sort(()=>Math.random()-0.5);
+    const scrambleDiv=document.getElementById("scrambleWords");
+    const resultDiv=document.getElementById("sentenceResult");
+    let chosen = [];
+
+    function renderScramble(){
+      scrambleDiv.innerHTML="";
+      scrambled.forEach((w,i)=>{
+        if(!chosen.includes(i)){
+          const span=document.createElement("span");
+          span.className="word"; span.textContent=w;
+          span.onclick=()=>{ chosen.push(i); renderScramble(); renderResult(); };
+          scrambleDiv.appendChild(span);
+        }
+      });
+    }
+
+    function renderResult(){
+      resultDiv.innerHTML = "";
+      chosen.forEach((idx, pos) => {
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = scrambled[idx];
+        span.onclick = () => {
+          chosen.splice(pos, 1);
+          renderScramble();
+          renderResult();
+        };
+        resultDiv.appendChild(span);
+      });
+
+      if(chosen.length === scrambled.length){
+        const formed = chosen.map(i => scrambled[i]).join(" ");
+        if(formed.trim() === sentence.trim()){
+          setTimeout(()=> go("videoPage"), 800);
+        }
+      }
+    }
+
+    renderScramble();
+    renderResult();
+
+    // Video page
+    const video=document.getElementById("video");
+    const playBtn=document.getElementById("playVideoBtn");
+    playBtn.addEventListener("click",()=>{
+      playBtn.style.display="none";
+      video.style.display="block";
+      const music=document.getElementById("bgMusic");
+      fadeVolume(music, 0.2, 1200);
+      video.play();
+      video.onended = () => {
+        fadeVolume(music, 1.0, 1200);
+        go("final");
+        setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500);
       };
-      if (scrambleAnswer.textContent === sentence.join("")) {
-        document.getElementById("toMessageBtn").style.display = "block";
-      }
-    };
-    scrambleWords.appendChild(btn);
-  });
-}
+    });
 
-function goToVideo() {
-  showPage("videoPage");
-  const video = document.getElementById("birthdayVideo");
-  const music = document.getElementById("bgMusic");
-  music.volume = 0.2;
-  video.play();
-  video.onended = () => {
-    music.volume = 1.0;
-    goToFinal();
-  };
-}
+    function fadeVolume(audioEl, target, duration){
+      const steps = 12;
+      const start = audioEl.volume;
+      const delta = (target - start) / steps;
+      let step = 0;
+      const ms = Math.max(50, Math.floor(duration / steps));
+      const t = setInterval(()=>{
+        step++;
+        audioEl.volume = Math.max(0, Math.min(1, start + delta * step));
+        if(step >= steps) clearInterval(t);
+      }, ms);
+    }
 
-function goToFinal() {
-  showPage("finalPage");
-  spawnPetals();
-}
-
-function spawnPetals() {
-  setInterval(() => {
-    const petal = document.createElement("div");
-    petal.className = "petal";
-    petal.style.left = Math.random() * 100 + "vw";
-    petal.style.animationDuration = (5 + Math.random() * 5) + "s";
-    document.body.appendChild(petal);
-    setTimeout(() => petal.remove(), 10000);
-  }, 800);
-}
-</script>
+    // NEW: Gentle falling petals
+    function startPetals(){
+      const colors = ["#ffc0cb","#ffb6c1","#ffe4e1"];
+      setInterval(()=>{
+        const petal=document.createElement("div");
+        petal.className="petal";
+        petal.style.left=Math.random()*100+"vw";
+        petal.style.background=colors[Math.floor(Math.random()*colors.length)];
+        petal.style.animationDuration=(6+Math.random()*5)+"s";
+        petal.style.opacity=0.7+Math.random()*0.3;
+        document.body.appendChild(petal);
+        setTimeout(()=>petal.remove(),12000);
+      }, 700); // not too many, steady flow
+    }
+  </script>
 </body>
 </html>
