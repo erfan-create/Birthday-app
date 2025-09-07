@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Natalia Birthday Surprise</title>
   <style>
-    body { margin:0; font-family: sans-serif; background:#fff7fb; }
+    body { margin:0; font-family:sans-serif; background:#fff7fb; overflow-x:hidden; }
     .screen { display:none; height:100vh; width:100%; text-align:center; }
     .active { display:flex; flex-direction:column; justify-content:center; align-items:center; }
     button { padding:10px 20px; margin-top:20px; border:none; border-radius:10px; background:#e91e63; color:white; font-weight:bold; cursor:pointer; }
 
     /* Intro fading text */
-    .fade-text { font-size:2em; opacity:0; transition: opacity 2s; position:absolute; }
-    #intro { position:relative; background:#ffe4ec; color:#333; font-size:2em; }
+    .fade-text { font-size:2em; opacity:0; transition: opacity 2s; position:absolute; text-align:center; width:100%; top:40%; }
 
     /* Puzzle grid */
     .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; justify-content:center; max-width:400px; }
@@ -37,9 +36,24 @@
     #videoModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
     #videoModal video { max-width:90%; max-height:80%; }
 
-    /* Final message */
-    #final { background:#ffe4ec; color:#333; font-size:2em; }
+    /* Final */
+    #final { background:#ffe4ec; color:#333; font-size:2em; position:relative; overflow:hidden; }
     #finalMessage { opacity:0; transition: opacity 3s; }
+
+    /* Petals animation */
+    .petal {
+      position:absolute;
+      width:20px;
+      height:20px;
+      background:pink;
+      border-radius:50%;
+      opacity:0.7;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      from { transform: translateY(-10vh) rotate(0deg); opacity:0.8; }
+      to { transform: translateY(110vh) rotate(360deg); opacity:0; }
+    }
   </style>
 </head>
 <body>
@@ -94,16 +108,17 @@
   </section>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="Audio.mp3" loop></audio>
+  <audio id="bgMusic" src="bg-music.mp3" loop></audio>
 
   <script>
     const screens=["landing","intro","puzzle1","flowerWall","puzzle2","messagePage","final"];
     function go(id){ screens.forEach(s=>document.getElementById(s).classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
-    // Landing
     const bgMusic=document.getElementById("bgMusic");
+
+    // Landing
     document.getElementById("landingStart").addEventListener("click",()=>{
-      bgMusic.volume=1; bgMusic.play();
+      bgMusic.volume=1; bgMusic.play().catch(()=>{}); // start music safely
       go("intro");
       runIntro();
     });
@@ -127,7 +142,7 @@
     document.getElementById("introBtn").addEventListener("click",()=>go("puzzle1"));
 
     // Puzzle 1 (memory)
-    const flowerImages=["Frangipani1.jpg","Frangipani2.jpg","Peony1.jpg","Peony2.jpg","Pinkrose.jpg","White1.jpg"];
+    const flowerImages=["Frangipani-1.jpg","Frangipani-2.jpg","Peony-1.jpg","Peony-2.jpg","Pink-rose.jpg","White-1.jpg"];
     const grid=document.getElementById("memoryGrid"); let first=null,lock=false,matched=0;
     function buildDeck(){
       const deck=[...flowerImages,...flowerImages].map((src,i)=>({id:i,src,key:src}));
@@ -164,13 +179,13 @@
     document.getElementById("toPuzzle2").addEventListener("click",()=>go("puzzle2"));
 
     // Puzzle 2 (scrambled words)
-    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world.";
+    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world. May the world open light, love, and harmony to you each year on this beautiful day";
     const words=sentence.split(" ");
     const wordBank=document.getElementById("wordBank");
     const answerArea=document.getElementById("answerArea");
     function buildWords(){
       wordBank.innerHTML=""; answerArea.innerHTML="";
-      words.forEach((w,i)=>{
+      words.forEach(w=>{
         const btn=document.createElement("div"); btn.className="word"; btn.textContent=w;
         btn.addEventListener("click",()=>{answerArea.appendChild(btn);});
         wordBank.appendChild(btn);
@@ -199,8 +214,25 @@
     }
 
     // Final
-    function showFinal(){go("final"); setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500);}
+    function showFinal(){
+      go("final");
+      setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500);
+      spawnPetals();
+    }
+
+    // Petals
+    function spawnPetals(){
+      const final=document.getElementById("final");
+      for(let i=0;i<30;i++){
+        const p=document.createElement("div");
+        p.className="petal";
+        p.style.left=Math.random()*100+"vw";
+        p.style.animationDuration=(5+Math.random()*5)+"s";
+        final.appendChild(p);
+        setTimeout(()=>p.remove(),10000);
+      }
+      setInterval(spawnPetals,4000);
+    }
   </script>
 </body>
 </html>
-
