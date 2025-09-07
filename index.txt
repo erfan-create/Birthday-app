@@ -72,37 +72,6 @@
 
     /* Final message */
     #finalMessage { font-size:2rem; font-weight:bold; color:#e91e63; margin-top:40px; opacity:0; transition: opacity 3s; }
-
-    /* NEW: Center video */
-    #videoPage {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-    }
-    #video {
-      max-width: 90%;
-      height: auto;
-      margin-top:20px;
-    }
-
-    /* NEW: Petal animation */
-    .petal {
-      position: fixed;
-      top: -5vh;
-      width: 20px;
-      height: 20px;
-      background: pink;
-      border-radius: 50%;
-      opacity: 0.8;
-      pointer-events: none;
-      animation-name: fall;
-      animation-timing-function: linear;
-    }
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(110vh) rotate(360deg); }
-    }
   </style>
 </head>
 <body>
@@ -160,9 +129,6 @@
     function go(id){
       screens.forEach(s=>document.getElementById(s).classList.remove("active"));
       document.getElementById(id).classList.add("active");
-
-      // NEW: Start petals only when entering final screen
-      if(id === "final") startPetals();
     }
 
     // Landing start -> intro
@@ -196,9 +162,9 @@
 
     // Memory puzzle
     const flowerImages=[
-      "Frangipani-1.jpg","Frangipani-2.jpg",
-      "Peony-1.jpg","Peony-2.jpg",
-      "Pink-rose.jpg","White-1.jpg"
+      "Frangipani1.jpg","Frangipani2.jpg",
+      "Peony1.jpg","Peony2.jpg",
+      "Pinkrose.jpg","White1.jpg"
     ];
     const grid=document.getElementById("memoryGrid");
     let first=null, lock=false, matched=0;
@@ -270,12 +236,14 @@
     }
 
     function renderResult(){
+      // Show placed words as clickable items so they can be removed
       resultDiv.innerHTML = "";
       chosen.forEach((idx, pos) => {
         const span = document.createElement("span");
         span.className = "word";
         span.textContent = scrambled[idx];
         span.onclick = () => {
+          // remove this placed word (by position)
           chosen.splice(pos, 1);
           renderScramble();
           renderResult();
@@ -283,10 +251,14 @@
         resultDiv.appendChild(span);
       });
 
+      // If all words placed, check for correctness
       if(chosen.length === scrambled.length){
         const formed = chosen.map(i => scrambled[i]).join(" ");
         if(formed.trim() === sentence.trim()){
+          // proceed after short delay
           setTimeout(()=> go("videoPage"), 800);
+        } else {
+          // leave it; user can click placed words to adjust
         }
       }
     }
@@ -301,6 +273,7 @@
       playBtn.style.display="none";
       video.style.display="block";
       const music=document.getElementById("bgMusic");
+      // fade music down smoothly (simple ramp)
       fadeVolume(music, 0.2, 1200);
       video.play();
       video.onended = () => {
@@ -321,21 +294,6 @@
         audioEl.volume = Math.max(0, Math.min(1, start + delta * step));
         if(step >= steps) clearInterval(t);
       }, ms);
-    }
-
-    // NEW: Gentle falling petals
-    function startPetals(){
-      const colors = ["#ffc0cb","#ffb6c1","#ffe4e1"];
-      setInterval(()=>{
-        const petal=document.createElement("div");
-        petal.className="petal";
-        petal.style.left=Math.random()*100+"vw";
-        petal.style.background=colors[Math.floor(Math.random()*colors.length)];
-        petal.style.animationDuration=(6+Math.random()*5)+"s";
-        petal.style.opacity=0.7+Math.random()*0.3;
-        document.body.appendChild(petal);
-        setTimeout(()=>petal.remove(),12000);
-      }, 700); // not too many, steady flow
     }
   </script>
 </body>
