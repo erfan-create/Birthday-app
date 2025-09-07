@@ -192,9 +192,9 @@
 
     // Memory puzzle
     const flowerImages=[
-      "Frangipani-1.jpg","Frangipani-2.jpg",
-      "Peony-1.jpg","Peony-2.jpg",
-      "Pink-rose.jpg","White-1.jpg"
+      "Frangipani1.jpg","Frangipani2.jpg",
+      "Peony1.jpg","Peony2.jpg",
+      "Pinkrose.jpg","White1.jpg"
     ];
     const grid=document.getElementById("memoryGrid");
     let first=null, lock=false, matched=0;
@@ -246,7 +246,7 @@
     }
 
     // Scramble puzzle
-    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world. May the world open light, love, and harmony to you each year on this beautiful day";
+    const sentence="The world became bright,and,colorful on this day when you opened your diamond eyes to the world";
     const words=sentence.split(" ");
     const scrambled=[...words].sort(()=>Math.random()-0.5);
     const scrambleDiv=document.getElementById("scrambleWords");
@@ -336,3 +336,4 @@
   </script>
 </body>
 </html>
+
