@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Natalia's Birthday ❤️</title>
+  <title>Natalia's birthday ❤️</title>
   <style>
     body { font-family: sans-serif; background: #fff7fb; margin:0; padding:0; overflow-x:hidden; }
-    .screen { display: none; text-align: center; padding:20px; }
+    .screen { display: none; text-align: center; padding:20px; position:relative; min-height:100vh; }
     .screen.active { display: block; }
 
     button {
@@ -70,8 +70,38 @@
     .word { padding:6px 10px; background:#fce4ec; border-radius:6px; cursor:pointer; user-select:none; }
     #sentenceResult { margin-top:20px; font-size:1.2rem; font-weight:bold; color:#e91e63; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:90%; margin-left:auto; margin-right:auto; }
 
+    /* Video page */
+    #videoPage { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    #videoPage video { margin-top:20px; }
+
     /* Final message */
-    #finalMessage { font-size:2rem; font-weight:bold; color:#e91e63; margin-top:40px; opacity:0; transition: opacity 3s; }
+    #finalMessage {
+      font-size:2rem;
+      font-weight:bold;
+      color:#e91e63;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      opacity:0;
+      transition: opacity 3s;
+      z-index:5;
+    }
+
+    /* Petals */
+    .petal {
+      position:absolute;
+      top:-40px;
+      width:24px;
+      height:24px;
+      background:url('petal.png') no-repeat center/contain;
+      opacity:0.8;
+      pointer-events:none;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform:translateY(110vh) rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -96,7 +126,7 @@
 
   <!-- Gallery -->
   <section class="screen" id="gallery">
-    <div class="gallery-text">She is more beautiful than the most beautiful flowers in the world 🌸</div>
+    <div class="gallery-text">You are the rarest flower in the garden of Earth 🌸</div>
     <div class="gallery" id="flowerGallery"></div>
   </section>
 
@@ -212,7 +242,7 @@
         img.style.transform=`rotate(${Math.random()*360}deg)`;
         gal.appendChild(img);
       }
-      setTimeout(()=>go("scramble"),5000); // auto move to next puzzle
+      setTimeout(()=>go("scramble"),5000);
     }
 
     // Scramble puzzle
@@ -236,33 +266,25 @@
     }
 
     function renderResult(){
-      // Show placed words as clickable items so they can be removed
       resultDiv.innerHTML = "";
       chosen.forEach((idx, pos) => {
         const span = document.createElement("span");
         span.className = "word";
         span.textContent = scrambled[idx];
         span.onclick = () => {
-          // remove this placed word (by position)
           chosen.splice(pos, 1);
           renderScramble();
           renderResult();
         };
         resultDiv.appendChild(span);
       });
-
-      // If all words placed, check for correctness
       if(chosen.length === scrambled.length){
         const formed = chosen.map(i => scrambled[i]).join(" ");
         if(formed.trim() === sentence.trim()){
-          // proceed after short delay
           setTimeout(()=> go("videoPage"), 800);
-        } else {
-          // leave it; user can click placed words to adjust
         }
       }
     }
-
     renderScramble();
     renderResult();
 
@@ -273,13 +295,15 @@
       playBtn.style.display="none";
       video.style.display="block";
       const music=document.getElementById("bgMusic");
-      // fade music down smoothly (simple ramp)
       fadeVolume(music, 0.2, 1200);
       video.play();
       video.onended = () => {
         fadeVolume(music, 1.0, 1200);
         go("final");
-        setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500);
+        setTimeout(()=>{
+          document.getElementById("finalMessage").style.opacity=1;
+          spawnPetals();
+        },500);
       };
     });
 
@@ -295,7 +319,19 @@
         if(step >= steps) clearInterval(t);
       }, ms);
     }
+
+    // Petals once final page is shown
+    function spawnPetals(){
+      const final=document.getElementById("final");
+      for(let i=0;i<20;i++){
+        const petal=document.createElement("div");
+        petal.className="petal";
+        petal.style.left=Math.random()*100+"%";
+        petal.style.animationDuration=(8+Math.random()*5)+"s";
+        petal.style.animationDelay=(Math.random()*5)+"s";
+        final.appendChild(petal);
+      }
+    }
   </script>
 </body>
 </html>
-
