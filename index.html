@@ -73,20 +73,16 @@
     /* Final message */
     #finalMessage { font-size:2rem; font-weight:bold; color:#e91e63; margin-top:40px; opacity:0; transition: opacity 3s; }
 
-    /* NEW: Center video */
-    #videoPage {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-    }
-    #video {
+    /* Video page (centered video) */
+    #videoPage { text-align: center; }
+    #videoPage video {
+      display: block;
+      margin: 20px auto;
       max-width: 90%;
       height: auto;
-      margin-top:20px;
     }
 
-    /* NEW: Petal animation */
+    /* Petal animation */
     .petal {
       position: fixed;
       top: -5vh;
@@ -143,7 +139,7 @@
     <h2>The message</h2>
     <button id="playVideoBtn">Play Video</button>
     <video id="video" width="640" height="360" controls style="display:none;">
-      <source src="message-video.mp4" type="video/mp4">
+      <source src="Video.mp4" type="video/mp4">
     </video>
   </section>
 
@@ -153,7 +149,7 @@
   </section>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="bg-music.mp3" loop></audio>
+  <audio id="bgMusic" src="Audio.mp3" loop></audio>
 
   <script>
     const screens = ["landing","intro","puzzle","gallery","scramble","videoPage","final"];
@@ -161,7 +157,7 @@
       screens.forEach(s=>document.getElementById(s).classList.remove("active"));
       document.getElementById(id).classList.add("active");
 
-      // NEW: Start petals only when entering final screen
+      // Start petals only when entering final screen
       if(id === "final") startPetals();
     }
 
@@ -323,7 +319,7 @@
       }, ms);
     }
 
-    // NEW: Gentle falling petals
+    // Gentle falling petals
     function startPetals(){
       const colors = ["#ffc0cb","#ffb6c1","#ffe4e1"];
       setInterval(()=>{
@@ -335,7 +331,7 @@
         petal.style.opacity=0.7+Math.random()*0.3;
         document.body.appendChild(petal);
         setTimeout(()=>petal.remove(),12000);
-      }, 700); // not too many, steady flow
+      }, 700);
     }
   </script>
 </body>
