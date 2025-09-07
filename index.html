@@ -77,7 +77,7 @@
 
   <!-- Flower wall -->
   <section class="screen" id="flowerWall">
-    <h2>She is more beautiful than the most beautiful flowers in the world 🌸</h2>
+    <h2>You are the rarest flower in the garden of Earth 🌸</h2>
     <div class="flower-wall" id="flowerGallery"></div>
     <button id="toPuzzle2">Continue</button>
   </section>
@@ -108,7 +108,7 @@
   </section>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="bg-music.mp3" loop></audio>
+  <audio id="bgMusic" src="Audio.mp3" loop></audio>
 
   <script>
     const screens=["landing","intro","puzzle1","flowerWall","puzzle2","messagePage","final"];
@@ -124,7 +124,7 @@
     });
 
     // Intro fading text
-    const introLines=["Hello Natalia","This is","A small digital gift","For you","With love"];
+    const introLines=["Hello Natalia","this is","a small digital gift","for you","with love"];
     function runIntro(){
       let idx=0;
       const text=document.getElementById("introText");
@@ -142,7 +142,7 @@
     document.getElementById("introBtn").addEventListener("click",()=>go("puzzle1"));
 
     // Puzzle 1 (memory)
-    const flowerImages=["Frangipani-1.jpg","Frangipani-2.jpg","Peony-1.jpg","Peony-2.jpg","Pink-rose.jpg","White-1.jpg"];
+    const flowerImages=["Frangipani1.jpg","Frangipani2.jpg","Peony1.jpg","Peony2.jpg","Pinkrose.jpg","White1.jpg"];
     const grid=document.getElementById("memoryGrid"); let first=null,lock=false,matched=0;
     function buildDeck(){
       const deck=[...flowerImages,...flowerImages].map((src,i)=>({id:i,src,key:src}));
@@ -179,7 +179,7 @@
     document.getElementById("toPuzzle2").addEventListener("click",()=>go("puzzle2"));
 
     // Puzzle 2 (scrambled words)
-    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world. May the world open light, love, and harmony to you each year on this beautiful day";
+    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world";
     const words=sentence.split(" ");
     const wordBank=document.getElementById("wordBank");
     const answerArea=document.getElementById("answerArea");
@@ -236,3 +236,4 @@
   </script>
 </body>
 </html>
+
