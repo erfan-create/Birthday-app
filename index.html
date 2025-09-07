@@ -67,8 +67,8 @@
 
     /* Scramble puzzle */
     #scrambleWords { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:20px auto; max-width:600px; }
-    .word { padding:6px 10px; background:#fce4ec; border-radius:6px; cursor:pointer; font-size:1rem; }
-    #sentenceResult { margin-top:20px; font-size:1.2rem; font-weight:bold; color:#e91e63; }
+    .word { padding:6px 10px; background:#fce4ec; border-radius:6px; cursor:pointer; user-select:none; }
+    #sentenceResult { margin-top:20px; font-size:1.2rem; font-weight:bold; color:#e91e63; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:90%; margin-left:auto; margin-right:auto; }
 
     /* Final message */
     #finalMessage { font-size:2rem; font-weight:bold; color:#e91e63; margin-top:40px; opacity:0; transition: opacity 3s; }
@@ -96,7 +96,7 @@
 
   <!-- Gallery -->
   <section class="screen" id="gallery">
-    <div class="gallery-text">You are the rarest flower in the garden of Earth 🌸</div>
+    <div class="gallery-text">She is more beautiful than the most beautiful flowers in the world 🌸</div>
     <div class="gallery" id="flowerGallery"></div>
   </section>
 
@@ -221,7 +221,8 @@
     const scrambled=[...words].sort(()=>Math.random()-0.5);
     const scrambleDiv=document.getElementById("scrambleWords");
     const resultDiv=document.getElementById("sentenceResult");
-    let chosen=[];
+    let chosen = [];
+
     function renderScramble(){
       scrambleDiv.innerHTML="";
       scrambled.forEach((w,i)=>{
@@ -233,11 +234,37 @@
         }
       });
     }
+
     function renderResult(){
-      resultDiv.textContent=chosen.map(i=>scrambled[i]).join(" ");
-      if(resultDiv.textContent.trim()===sentence.trim()){ setTimeout(()=>go("videoPage"),2000); }
+      // Show placed words as clickable items so they can be removed
+      resultDiv.innerHTML = "";
+      chosen.forEach((idx, pos) => {
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = scrambled[idx];
+        span.onclick = () => {
+          // remove this placed word (by position)
+          chosen.splice(pos, 1);
+          renderScramble();
+          renderResult();
+        };
+        resultDiv.appendChild(span);
+      });
+
+      // If all words placed, check for correctness
+      if(chosen.length === scrambled.length){
+        const formed = chosen.map(i => scrambled[i]).join(" ");
+        if(formed.trim() === sentence.trim()){
+          // proceed after short delay
+          setTimeout(()=> go("videoPage"), 800);
+        } else {
+          // leave it; user can click placed words to adjust
+        }
+      }
     }
+
     renderScramble();
+    renderResult();
 
     // Video page
     const video=document.getElementById("video");
@@ -246,10 +273,28 @@
       playBtn.style.display="none";
       video.style.display="block";
       const music=document.getElementById("bgMusic");
-      music.volume=0.2;
+      // fade music down smoothly (simple ramp)
+      fadeVolume(music, 0.2, 1200);
       video.play();
-      video.onended=()=>{ music.volume=1.0; go("final"); setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500); };
+      video.onended = () => {
+        fadeVolume(music, 1.0, 1200);
+        go("final");
+        setTimeout(()=>{document.getElementById("finalMessage").style.opacity=1;},500);
+      };
     });
+
+    function fadeVolume(audioEl, target, duration){
+      const steps = 12;
+      const start = audioEl.volume;
+      const delta = (target - start) / steps;
+      let step = 0;
+      const ms = Math.max(50, Math.floor(duration / steps));
+      const t = setInterval(()=>{
+        step++;
+        audioEl.volume = Math.max(0, Math.min(1, start + delta * step));
+        if(step >= steps) clearInterval(t);
+      }, ms);
+    }
   </script>
 </body>
 </html>
