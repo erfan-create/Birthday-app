@@ -18,9 +18,6 @@
       color:white;
       font-weight:bold;
       margin-top:20px;
-      display:block;
-      margin-left:auto;
-      margin-right:auto;
     }
 
     /* Intro fade text */
@@ -76,31 +73,38 @@
     /* Video page */
     #videoPage { display:flex; flex-direction:column; align-items:center; justify-content:center; }
     #videoPage video { margin-top:20px; }
-
+    
     /* Final message */
     #finalMessage {
       font-size:2rem;
       font-weight:bold;
       color:#e91e63;
-      position:absolute;
-      top:50%; left:50%;
-      transform:translate(-50%,-50%);
+      margin-top:40px;
       opacity:0;
       transition: opacity 3s;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
     }
 
     /* Falling petals */
     .petal {
-      position:fixed;
-      top:-40px;
-      font-size:24px;
-      color:#e91e63;
-      opacity:0.7;
-      animation-name: fall;
-      animation-timing-function: linear;
+      position: fixed;
+      top: -50px;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+      opacity: 0.7;
+      pointer-events: none;
+      animation: fall linear forwards;
     }
     @keyframes fall {
-      to { transform: translateY(110vh) rotate(360deg); opacity:0; }
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0.2;
+      }
     }
   </style>
 </head>
@@ -141,7 +145,7 @@
   <section class="screen" id="videoPage">
     <h2>The message</h2>
     <button id="playVideoBtn">Play Video</button>
-    <video id="video" width="640" height="360" controls style="display:none; margin:auto;">
+    <video id="video" width="640" height="360" controls style="display:none;">
       <source src="Video.mp4" type="video/mp4">
     </video>
   </section>
@@ -177,7 +181,7 @@
       const text=document.getElementById("introText");
       function showNext(){
         if(introIndex>=introSentences.length){
-          document.getElementById("introBtn").style.display="block";
+          document.getElementById("introBtn").style.display="inline-block";
           return;
         }
         text.textContent=introSentences[introIndex];
@@ -246,7 +250,7 @@
     }
 
     // Scramble puzzle
-    const sentence="The world became bright and colorful on this day when you opened your diamond eyes to the world";
+    const sentence="The world became bright,and,colorful on this day when you opened your diamond eyes to the world";
     const words=sentence.split(" ");
     const scrambled=[...words].sort(()=>Math.random()-0.5);
     const scrambleDiv=document.getElementById("scrambleWords");
@@ -278,6 +282,7 @@
         };
         resultDiv.appendChild(span);
       });
+
       if(chosen.length === scrambled.length){
         const formed = chosen.map(i => scrambled[i]).join(" ");
         if(formed.trim() === sentence.trim()){
@@ -285,6 +290,7 @@
         }
       }
     }
+
     renderScramble();
     renderResult();
 
@@ -302,7 +308,7 @@
         go("final");
         setTimeout(()=>{
           document.getElementById("finalMessage").style.opacity=1;
-          launchPetals();
+          startPetals();
         },500);
       };
     });
@@ -321,20 +327,16 @@
     }
 
     // Falling petals
-    function launchPetals(){
-      for(let i=0;i<15;i++){
-        setTimeout(()=>{
-          const petal=document.createElement("div");
-          petal.className="petal";
-          petal.textContent="🌸";
-          petal.style.left=Math.random()*100+"vw";
-          petal.style.fontSize=(16+Math.random()*16)+"px";
-          const duration=5+Math.random()*5;
-          petal.style.animationDuration=duration+"s";
-          document.body.appendChild(petal);
-          setTimeout(()=>petal.remove(), duration*1000);
-        }, i*300);
-      }
+    function startPetals(){
+      setInterval(()=>{
+        const petal=document.createElement("div");
+        petal.className="petal";
+        petal.style.left=Math.random()*100+"vw";
+        petal.style.background=`hsl(${330+Math.random()*20},70%,80%)`;
+        petal.style.animationDuration=5+Math.random()*5+"s";
+        document.body.appendChild(petal);
+        setTimeout(()=>petal.remove(),10000);
+      },800);
     }
   </script>
 </body>
