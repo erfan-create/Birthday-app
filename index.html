@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Birthday Adventure for Natalia ❤️</title>
+  <title>Natalia's Birthday Surprise ❤️</title>
   <style>
     body { font-family: sans-serif; background: #fff7fb; margin:0; padding:0; overflow-x:hidden; }
     .screen { display: none; text-align: center; padding:20px; }
@@ -123,7 +123,7 @@
 
   <!-- Gallery -->
   <section class="screen" id="gallery">
-    <div class="gallery-text">She is more beautiful than the most beautiful flowers in the world 🌸</div>
+    <div class="gallery-text">You are the rarest flower in the garden of Earth 🌸</div>
     <div class="gallery" id="flowerGallery"></div>
   </section>
 
@@ -139,17 +139,17 @@
     <h2>The message</h2>
     <button id="playVideoBtn">Play Video</button>
     <video id="video" width="640" height="360" controls style="display:none;">
-      <source src="message-video.mp4" type="video/mp4">
+      <source src="Video.mp4" type="video/mp4">
     </video>
   </section>
 
   <!-- Final message -->
   <section class="screen" id="final">
-    <div id="finalMessage">Happy birthday Natalia - 08.09.2025</div>
+    <div id="finalMessage">Always Beloved - Happy birthday Natalia - 08.09.2025</div>
   </section>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="bg-music.mp3" loop></audio>
+  <audio id="bgMusic" src="Audio.mp3" loop></audio>
 
   <script>
     const screens = ["landing","intro","puzzle","gallery","scramble","videoPage","final"];
@@ -171,7 +171,7 @@
     });
 
     // Intro fading words
-    const introSentences=["Hello Natalia","This is","A small digital gift","For you","With love"];
+    const introSentences=["Hello Natalia","this is","a small digital gift","for you","with love"];
     let introIndex=0;
     function startIntro(){
       const text=document.getElementById("introText");
@@ -336,4 +336,5 @@
   </script>
 </body>
 </html>
+
 
